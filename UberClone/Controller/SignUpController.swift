@@ -1,13 +1,13 @@
 //
-//  LoginController.swift
+//  SignUpController.swift
 //  UberClone
 //
-//  Created by User on 2022/03/07.
+//  Created by User on 2022/03/08.
 //
 
 import UIKit
 
-class LoginController: UIViewController{
+class SignUpController: UIViewController {
     
     //MARK: - Properties
     
@@ -25,9 +25,21 @@ class LoginController: UIViewController{
         return view
     }()
     
+    private lazy var fullnameContainerView: UIView = {
+        let view = UIView().inputContainerView(image: UIImage(imageLiteralResourceName: "ic_person_outline_white_2x"), textField: fullnameTextField)
+        view.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        return view
+    }()
+    
     private lazy var passwordContainterView: UIView = {
         let view = UIView().inputContainerView(image: UIImage(imageLiteralResourceName: "ic_lock_outline_white_2x"), textField: passwordTextField)
         view.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        return view
+    }()
+    
+    private lazy var accountTypeContainterView: UIView = {
+        let view = UIView().inputContainerView(image: UIImage(imageLiteralResourceName: "ic_account_box_white_2x"), segmentedControl: accountTypeSegmentControl)
+        view.heightAnchor.constraint(equalToConstant: 80).isActive = true
         return view
     }()
     
@@ -35,30 +47,42 @@ class LoginController: UIViewController{
         return UITextField().textField(withPlaceholder: "Email", isSecureTextEntry: false, isEmailType: true)
     }()
     
+    private let fullnameTextField: UITextField = {
+        return UITextField().textField(withPlaceholder: "Fullname", isSecureTextEntry: false, isEmailType: false)
+    }()
+    
     private let passwordTextField: UITextField = {
         return UITextField().textField(withPlaceholder: "Password", isSecureTextEntry: true, isEmailType: false)
     }()
     
-    private let loginButton: AuthButton = {
+    private let accountTypeSegmentControl: UISegmentedControl = {
+        let sc = UISegmentedControl(items: ["Rider", "Driver"])
+        sc.backgroundColor = .backgroundColor
+        sc.setTitleTextAttributes([.foregroundColor: UIColor.white], for: .normal)
+        sc.setTitleTextAttributes([.foregroundColor: UIColor.black], for: .selected)
+        sc.selectedSegmentIndex = 0
+        return sc
+    }()
+    
+    private let signUpButton: AuthButton = {
         let button = AuthButton(type: .system)
-        button.setTitle("Log In", for: .normal)
+        button.setTitle("Sign Up", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
         return button
     }()
     
-    private let dontHaveAccountButton: UIButton = {
+    private let alreadyHaveAccountButton: UIButton = {
         let button = UIButton(type: .system)
-        let attributedTitle = NSMutableAttributedString(string: "Don't have an account?  ", attributes:
+        let attributedTitle = NSMutableAttributedString(string: "Already have an account?  ", attributes:
                                                             [.font: UIFont.systemFont(ofSize: 16),
                                                              .foregroundColor: UIColor.lightGray])
-        attributedTitle.append(NSAttributedString(string: "Sign Up",
+        attributedTitle.append(NSAttributedString(string: "Log in",
                                                   attributes: [.font: UIFont.boldSystemFont(ofSize: 16),
                                                                .foregroundColor: UIColor.mainBlueTint]))
-        button.addTarget(self, action: #selector(handleShowSignUp), for: .touchUpInside)
+        button.addTarget(self, action: #selector(handleShowLogin), for: .touchUpInside)
         button.setAttributedTitle(attributedTitle, for: .normal)
         return button
     }()
-    
     
     //MARK: - Lifecycle
     
@@ -68,20 +92,19 @@ class LoginController: UIViewController{
         configureUI()
         let tapGesture = UITapGestureRecognizer(target: view, action:#selector(UIView.endEditing))
         view.addGestureRecognizer(tapGesture)
-    
     }
+    
     
     //MARK: - Actions
     
-    @objc func handleShowSignUp() {
-        let controller = SignUpController()
-        navigationController?.pushViewController(controller, animated: true)
+    @objc func handleShowLogin() {
+        navigationController?.popViewController(animated: true)
     }
+    
     
     //MARK: - Helpers
     
     func configureUI() {
-        configureNavigationBar()
         
         view.backgroundColor = .backgroundColor
         
@@ -89,22 +112,21 @@ class LoginController: UIViewController{
         titleLabel.anchor(top: view.safeAreaLayoutGuide.topAnchor)
         titleLabel.centerX(inView: view)
         
-        let stack = UIStackView(arrangedSubviews: [emailContainterView, passwordContainterView, loginButton])
+        let stack = UIStackView(arrangedSubviews: [emailContainterView,
+                                                   fullnameContainerView,
+                                                   passwordContainterView,
+                                                   accountTypeContainterView,
+                                                   signUpButton])
         stack.axis = .vertical
-        stack.distribution = .fillEqually
+        stack.distribution = .equalSpacing
         stack.spacing = 24
         
         view.addSubview(stack)
         stack.anchor(top: titleLabel.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 40, paddingLeft: 16, paddingRight: 16)
         
-        
-        view.addSubview(dontHaveAccountButton)
-        dontHaveAccountButton.centerX(inView: view)
-        dontHaveAccountButton.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor, height: 32)
+        view.addSubview(alreadyHaveAccountButton)
+        alreadyHaveAccountButton.centerX(inView: view)
+        alreadyHaveAccountButton.anchor(bottom: view.safeAreaLayoutGuide.bottomAnchor, height: 32)
     }
     
-    func configureNavigationBar() {
-        navigationController?.navigationBar.isHidden = true
-        navigationController?.navigationBar.barStyle = .black
-    }
 }
