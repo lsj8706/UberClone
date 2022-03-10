@@ -12,6 +12,8 @@ class SignUpController: UIViewController {
     
     //MARK: - Properties
     
+    weak var delegate: AuthenticationDelegate?
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "UBER"
@@ -121,7 +123,7 @@ class SignUpController: UIViewController {
             let values = ["email": email, "fullname": fullname, "accountType": accountTypeIndex] as [String : Any]
             
             Database.database().reference().child("users").child(uid).updateChildValues(values) { error, ref in
-                print("Successfully register user and saved data")
+                self.delegate?.authenticationDidComplete()
             }
         }
     }

@@ -8,9 +8,16 @@
 import UIKit
 import Firebase
 
+protocol AuthenticationDelegate: AnyObject {
+    func authenticationDidComplete()
+}
+
+
 class LoginController: UIViewController{
     
     //MARK: - Properties
+    
+    weak var delegate: AuthenticationDelegate?
     
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -77,6 +84,7 @@ class LoginController: UIViewController{
     
     @objc func handleShowSignUp() {
         let controller = SignUpController()
+        controller.delegate = delegate
         navigationController?.pushViewController(controller, animated: true)
     }
     
@@ -89,7 +97,8 @@ class LoginController: UIViewController{
                 print("DEBUG: Failed to log user in with error \(error.localizedDescription)")
                 return
             }
-            print("Successfully logged in")
+            
+            self.delegate?.authenticationDidComplete()
         }
     }
     
