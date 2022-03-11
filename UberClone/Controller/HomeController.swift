@@ -14,12 +14,14 @@ class HomeController: UIViewController {
     //MARK: - Properties
     
     private let mapView = MKMapView()
+    private let locationManager = CLLocationManager()
     
     //MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         checkIfUserIsLoggedIn()
+        enableLocationService(locationManager)
         //signOut()
     }
     
@@ -50,8 +52,15 @@ class HomeController: UIViewController {
     //MARK: - Helpers
     
     func configureUI() {
+        configureMapView()
+    }
+    
+    func configureMapView() {
         view.addSubview(mapView)
         mapView.frame = view.frame
+        
+        mapView.showsUserLocation = true
+        mapView.userTrackingMode = .follow
     }
     
 }
@@ -62,4 +71,57 @@ extension HomeController: AuthenticationDelegate {
         configureUI()
         self.dismiss(animated: true, completion: nil)
     }
+}
+
+
+//MARK: - LocationServices
+
+extension HomeController: CLLocationManagerDelegate {
+    func enableLocationService(_ manager: CLLocationManager) {
+        if #available(iOS 14.0, *) {
+            locationManager.delegate = self
+            
+            
+            switch manager.authorizationStatus {
+            case .notDetermined:
+                print("DEBUG: Not determined...")
+                manager.requestWhenInUseAuthorization()
+            case .restricted, .denied:
+                break
+            case .authorizedAlways:
+                print("DEBUG: Auth always...")
+                manager.startUpdatingLocation()
+                locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            case .authorizedWhenInUse:
+                print("DEBUG: Auth when in use...")
+                manager.requestAlwaysAuthorization()
+            @unknown default:
+                print("DEBUG: There is an error with finding your location")
+            }
+        } else {
+            switch CLLocationManager.authorizationStatus() {
+            case .notDetermined:
+                print("DEBUG: Not determined...")
+                manager.requestWhenInUseAuthorization()
+            case .restricted, .denied:
+                break
+            case .authorizedAlways:
+                print("DEBUG: Auth always...")
+                manager.startUpdatingLocation()
+                locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            case .authorizedWhenInUse:
+                print("DEBUG: Auth when in use...")
+                manager.requestAlwaysAuthorization()
+            @unknown default:
+                print("DEBUG: There is an error with finding your location")
+            }
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if status == .authorizedWhenInUse{
+            locationManager.requestAlwaysAuthorization()
+        }
+    }
+    
 }
