@@ -16,6 +16,9 @@ class HomeController: UIViewController {
     private let mapView = MKMapView()
     private let locationManager = CLLocationManager()
     
+    private let inputActivationView = LocationInputActivationView()
+    
+    
     //MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -53,8 +56,21 @@ class HomeController: UIViewController {
     
     func configureUI() {
         configureMapView()
+        
+        view.addSubview(inputActivationView)
+        inputActivationView.centerX(inView: view)
+        inputActivationView.setDimensions(height: 50, width: view.frame.width - 64)
+        inputActivationView.anchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: 10)
+        inputActivationView.alpha = 0
+        inputActivationView.delegate = self
+        
+        UIView.animate(withDuration: 2) {
+            self.inputActivationView.alpha = 1
+        }
+        
     }
     
+    // 지도 설정
     func configureMapView() {
         view.addSubview(mapView)
         mapView.frame = view.frame
@@ -75,7 +91,7 @@ extension HomeController: AuthenticationDelegate {
 
 
 //MARK: - LocationServices
-
+// 위치 정보 수집 허용 여부 체크
 extension HomeController: CLLocationManagerDelegate {
     func enableLocationService(_ manager: CLLocationManager) {
         if #available(iOS 14.0, *) {
@@ -122,6 +138,15 @@ extension HomeController: CLLocationManagerDelegate {
         if status == .authorizedWhenInUse{
             locationManager.requestAlwaysAuthorization()
         }
+    }
+    
+}
+
+
+//MARK: - LocationInputActivationViewDelegate
+extension HomeController: LocationInputActivationViewDelegate {
+    func presentLocationInputView() {
+        print("DEBUG: handle location present lcoation inputView")
     }
     
 }
