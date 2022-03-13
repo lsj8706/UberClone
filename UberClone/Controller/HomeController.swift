@@ -17,15 +17,15 @@ class HomeController: UIViewController {
     private let locationManager = CLLocationManager()
     
     private let inputActivationView = LocationInputActivationView()
-    
+    private let locationInputView = LocationInputView()
     
     //MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureNavigationBar()
         checkIfUserIsLoggedIn()
         enableLocationService(locationManager)
-        //signOut()
     }
     
     //MARK: - API
@@ -60,7 +60,7 @@ class HomeController: UIViewController {
         view.addSubview(inputActivationView)
         inputActivationView.centerX(inView: view)
         inputActivationView.setDimensions(height: 50, width: view.frame.width - 64)
-        inputActivationView.anchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: 10)
+        inputActivationView.anchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: 32)
         inputActivationView.alpha = 0
         inputActivationView.delegate = self
         
@@ -70,6 +70,12 @@ class HomeController: UIViewController {
         
     }
     
+    // 네비게이션바 설정
+    func configureNavigationBar() {
+        navigationController?.navigationBar.isHidden = true
+        navigationController?.navigationBar.barStyle = .black
+    }
+    
     // 지도 설정
     func configureMapView() {
         view.addSubview(mapView)
@@ -77,6 +83,19 @@ class HomeController: UIViewController {
         
         mapView.showsUserLocation = true
         mapView.userTrackingMode = .follow
+    }
+    
+    func configureLocationInputView() {
+        locationInputView.delegate = self
+        view.addSubview(locationInputView)
+        locationInputView.anchor(top: view.topAnchor, left: view.leftAnchor, right: view.rightAnchor, height: 200)
+        locationInputView.alpha = 0
+        
+        UIView.animate(withDuration: 0.5) {
+            self.locationInputView.alpha = 1
+        } completion: { _ in
+            print("DEBUG: Present table view...")
+        }
     }
     
 }
@@ -146,7 +165,25 @@ extension HomeController: CLLocationManagerDelegate {
 //MARK: - LocationInputActivationViewDelegate
 extension HomeController: LocationInputActivationViewDelegate {
     func presentLocationInputView() {
-        print("DEBUG: handle location present lcoation inputView")
+        inputActivationView.alpha = 0
+        configureLocationInputView()
+    }
+    
+}
+
+
+//MARK: - LocationInputViewDelegate
+
+extension HomeController: LocationInputViewDelegate {
+    func dismissLocationInputView() {
+        UIView.animate(withDuration: 0.3) {
+            self.locationInputView.alpha = 0
+        } completion: { _ in
+            UIView.animate(withDuration: 0.3) {
+                self.inputActivationView.alpha = 1
+            }
+        }
+
     }
     
 }
