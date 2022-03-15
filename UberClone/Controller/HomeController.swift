@@ -9,6 +9,8 @@ import UIKit
 import Firebase
 import MapKit
 
+private let reuseIdentifier = "LocationCell"
+
 class HomeController: UIViewController {
     
     //MARK: - Properties
@@ -18,6 +20,8 @@ class HomeController: UIViewController {
     
     private let inputActivationView = LocationInputActivationView()
     private let locationInputView = LocationInputView()
+    private let tableView = UITableView()
+    private final let locationInputViewHeight: CGFloat = 200
     
     //MARK: - Lifecycle
     
@@ -68,6 +72,7 @@ class HomeController: UIViewController {
             self.inputActivationView.alpha = 1
         }
         
+        configureTableView()
     }
     
     // 네비게이션바 설정
@@ -88,14 +93,32 @@ class HomeController: UIViewController {
     func configureLocationInputView() {
         locationInputView.delegate = self
         view.addSubview(locationInputView)
-        locationInputView.anchor(top: view.topAnchor, left: view.leftAnchor, right: view.rightAnchor, height: 200)
+        locationInputView.anchor(top: view.topAnchor, left: view.leftAnchor, right: view.rightAnchor, height: locationInputViewHeight)
         locationInputView.alpha = 0
         
         UIView.animate(withDuration: 0.5) {
             self.locationInputView.alpha = 1
         } completion: { _ in
-            print("DEBUG: Present table view...")
+            UIView.animate(withDuration: 0.2) {
+                self.tableView.frame.origin.y = self.locationInputViewHeight
+            }
         }
+    }
+    
+    // 테이블 뷰 설정
+    func configureTableView() {
+        tableView.delegate = self
+        tableView.dataSource = self
+        
+        tableView.register(LocationCell.self, forCellReuseIdentifier: reuseIdentifier)
+        tableView.rowHeight = 60
+        
+        // 테이블 뷰에서 필요한 cell을 제외한 부분의 cell 테두리를 제거
+        tableView.tableFooterView = UIView()
+        
+        let height = view.frame.height - locationInputViewHeight
+        tableView.frame = CGRect(x: 0, y: view.frame.height, width: view.frame.width, height: height)
+        view.addSubview(tableView)
     }
     
 }
@@ -178,12 +201,38 @@ extension HomeController: LocationInputViewDelegate {
     func dismissLocationInputView() {
         UIView.animate(withDuration: 0.3) {
             self.locationInputView.alpha = 0
+            self.tableView.frame.origin.y = self.view.frame.height
         } completion: { _ in
+            self.locationInputView.removeFromSuperview()
             UIView.animate(withDuration: 0.3) {
                 self.inputActivationView.alpha = 1
             }
         }
 
+    }
+    
+}
+
+//MARK: - UITableViewDelegate/DataSource
+extension HomeController: UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "Test"
+    }
+    
+    // 테이블 뷰를 두 부분으로 나누기
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        // 첫번째 섹션(부분)에는 두개의 cell만 생성
+        return section == 0 ? 2 : 5
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! LocationCell
+        return cell
     }
     
 }
