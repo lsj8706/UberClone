@@ -22,6 +22,7 @@
 		CE9C544E27D6390B001E3E5D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CE9C544D27D6390B001E3E5D /* Main.storyboard */; };
 		CE9C545027D63BD2001E3E5D /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9C544F27D63BD2001E3E5D /* Extensions.swift */; };
 		CE9C545227D63FD8001E3E5D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE9C545127D63FD8001E3E5D /* Assets.xcassets */; };
+		CED74FF727E2297A00DA635D /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = CED74FF627E2297A00DA635D /* Service.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +45,7 @@
 		CE9C544D27D6390B001E3E5D /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		CE9C544F27D63BD2001E3E5D /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		CE9C545127D63FD8001E3E5D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		CED74FF627E2297A00DA635D /* Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Service.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -123,6 +125,7 @@
 		CE9C544727D6374D001E3E5D /* Service */ = {
 			isa = PBXGroup;
 			children = (
+				CED74FF627E2297A00DA635D /* Service.swift */,
 			);
 			path = Service;
 			sourceTree = "<group>";
@@ -279,6 +282,7 @@
 				CE9C543327D63715001E3E5D /* AppDelegate.swift in Sources */,
 				CE9C544C27D637FB001E3E5D /* LoginController.swift in Sources */,
 				CE9C543527D63715001E3E5D /* SceneDelegate.swift in Sources */,
+				CED74FF727E2297A00DA635D /* Service.swift in Sources */,
 				CE275A0927DCC66C00F66EB5 /* LocationInputActivationView.swift in Sources */,
 				CE9C545027D63BD2001E3E5D /* Extensions.swift in Sources */,
 			);

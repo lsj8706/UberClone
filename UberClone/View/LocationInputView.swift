@@ -24,9 +24,8 @@ class LocationInputView: UIView {
         return button
     }()
     
-    private let titleLabel: UILabel = {
+    let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Sejin Lee"
         label.textColor = .darkGray
         label.font = UIFont.systemFont(ofSize: 16)
         return label

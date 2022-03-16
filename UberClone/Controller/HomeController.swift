@@ -23,6 +23,10 @@ class HomeController: UIViewController {
     private let tableView = UITableView()
     private final let locationInputViewHeight: CGFloat = 200
     
+    private var fullname: String? {
+        didSet { locationInputView.titleLabel.text = fullname }
+    }
+        
     //MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -30,9 +34,16 @@ class HomeController: UIViewController {
         configureNavigationBar()
         checkIfUserIsLoggedIn()
         enableLocationService(locationManager)
+        fetchUserData()
     }
     
     //MARK: - API
+    
+    func fetchUserData() {
+        Service.shared.fetchUserData { fullname in
+            self.fullname = fullname
+        }
+    }
     
     func checkIfUserIsLoggedIn() {
         if Auth.auth().currentUser?.uid == nil {
