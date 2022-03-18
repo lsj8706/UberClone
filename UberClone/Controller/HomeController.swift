@@ -23,8 +23,8 @@ class HomeController: UIViewController {
     private let tableView = UITableView()
     private final let locationInputViewHeight: CGFloat = 200
     
-    private var fullname: String? {
-        didSet { locationInputView.titleLabel.text = fullname }
+    private var user: User? {
+        didSet { locationInputView.user = user }
     }
         
     //MARK: - Lifecycle
@@ -40,8 +40,8 @@ class HomeController: UIViewController {
     //MARK: - API
     
     func fetchUserData() {
-        Service.shared.fetchUserData { fullname in
-            self.fullname = fullname
+        Service.shared.fetchUserData { user in
+            self.user = user
         }
     }
     
