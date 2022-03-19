@@ -16,7 +16,7 @@ class HomeController: UIViewController {
     //MARK: - Properties
     
     private let mapView = MKMapView()
-    private let locationManager = CLLocationManager()
+    private let locationManager = LocationHandler.shared.locationManager
     
     private let inputActivationView = LocationInputActivationView()
     private let locationInputView = LocationInputView()
@@ -33,17 +33,27 @@ class HomeController: UIViewController {
         super.viewDidLoad()
         configureNavigationBar()
         checkIfUserIsLoggedIn()
-        enableLocationService(locationManager)
+        enableLocationService(locationManager ?? CLLocationManager())
         fetchUserData()
+        fetchDrivers()
     }
     
     //MARK: - API
     
     func fetchUserData() {
-        Service.shared.fetchUserData { user in
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        Service.shared.fetchUserData(uid: uid) { user in
             self.user = user
         }
     }
+    
+    func fetchDrivers() {
+        guard let location = locationManager?.location else { return }
+        Service.shared.fetchDrivers(location: location) { user in
+            print("DEBUG: Driver is \(user.location)")
+        }
+    }
+    
     
     func checkIfUserIsLoggedIn() {
         if Auth.auth().currentUser?.uid == nil {
@@ -62,6 +72,13 @@ class HomeController: UIViewController {
     func signOut() {
         do {
             try Auth.auth().signOut()
+            DispatchQueue.main.async {
+                let controller = LoginController()
+                controller.delegate = self
+                let nav = UINavigationController(rootViewController: controller)
+                nav.modalPresentationStyle = .fullScreen
+                self.present(nav, animated: false, completion: nil)
+            }
         } catch {
             print("DEBUG: Error signing out")
         }
@@ -145,10 +162,9 @@ extension HomeController: AuthenticationDelegate {
 
 //MARK: - LocationServices
 // 위치 정보 수집 허용 여부 체크
-extension HomeController: CLLocationManagerDelegate {
+extension HomeController {
     func enableLocationService(_ manager: CLLocationManager) {
         if #available(iOS 14.0, *) {
-            locationManager.delegate = self
             
             
             switch manager.authorizationStatus {
@@ -160,7 +176,7 @@ extension HomeController: CLLocationManagerDelegate {
             case .authorizedAlways:
                 print("DEBUG: Auth always...")
                 manager.startUpdatingLocation()
-                locationManager.desiredAccuracy = kCLLocationAccuracyBest
+                locationManager?.desiredAccuracy = kCLLocationAccuracyBest
             case .authorizedWhenInUse:
                 print("DEBUG: Auth when in use...")
                 manager.requestAlwaysAuthorization()
@@ -177,7 +193,7 @@ extension HomeController: CLLocationManagerDelegate {
             case .authorizedAlways:
                 print("DEBUG: Auth always...")
                 manager.startUpdatingLocation()
-                locationManager.desiredAccuracy = kCLLocationAccuracyBest
+                locationManager?.desiredAccuracy = kCLLocationAccuracyBest
             case .authorizedWhenInUse:
                 print("DEBUG: Auth when in use...")
                 manager.requestAlwaysAuthorization()
@@ -187,11 +203,7 @@ extension HomeController: CLLocationManagerDelegate {
         }
     }
     
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        if status == .authorizedWhenInUse{
-            locationManager.requestAlwaysAuthorization()
-        }
-    }
+
     
 }
 

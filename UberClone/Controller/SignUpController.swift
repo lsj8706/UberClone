@@ -7,10 +7,13 @@
 
 import UIKit
 import Firebase
+import GeoFire
 
 class SignUpController: UIViewController {
     
     //MARK: - Properties
+    
+    private var location = LocationHandler.shared.locationManager.location
     
     weak var delegate: AuthenticationDelegate?
     
@@ -96,6 +99,7 @@ class SignUpController: UIViewController {
         configureUI()
         let tapGesture = UITapGestureRecognizer(target: view, action:#selector(UIView.endEditing))
         view.addGestureRecognizer(tapGesture)
+        
     }
     
     
@@ -119,16 +123,28 @@ class SignUpController: UIViewController {
             }
             
             guard let uid = result?.user.uid else { return }
-            
             let values = ["email": email, "fullname": fullname, "accountType": accountTypeIndex] as [String : Any]
             
-            Database.database().reference().child("users").child(uid).updateChildValues(values) { error, ref in
-                self.delegate?.authenticationDidComplete()
+            if accountTypeIndex == 1 {
+                let geofire = GeoFire(firebaseRef: REF_DRIVER_LOCATIONS)
+                guard let location = self.location else { return }
+                
+                geofire.setLocation(location, forKey: uid) { error in
+                    self.uploadUserDataAndShowHomeController(uid: uid, values: values)
+                }
             }
+            
+            self.uploadUserDataAndShowHomeController(uid: uid, values: values)
         }
     }
     
     //MARK: - Helpers
+    
+    func uploadUserDataAndShowHomeController(uid: String, values: [String: Any]) {
+        REF_USERS.child(uid).updateChildValues(values) { error, ref in
+            self.delegate?.authenticationDidComplete()
+        }
+    }
     
     func configureUI() {
         
