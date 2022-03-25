@@ -39,7 +39,13 @@ class HomeController: UIViewController {
     private var route: MKRoute?
     
     private var user: User? {
-        didSet { locationInputView.user = user }
+        didSet {
+            locationInputView.user = user
+            if user?.accountType == .passenger {
+                fetchDrivers()
+                configureLocationInputActivationView()
+            }
+        }
     }
     
     private let actionButton: UIButton = {
@@ -56,7 +62,6 @@ class HomeController: UIViewController {
         configureNavigationBar()
         checkIfUserIsLoggedIn()
         enableLocationService(locationManager ?? CLLocationManager())
-
     }
     
     //MARK: - Actions
@@ -88,6 +93,7 @@ class HomeController: UIViewController {
     }
     
     func fetchDrivers() {
+        guard user?.accountType == .passenger else { return }
         guard let location = locationManager?.location else { return }
         Service.shared.fetchDrivers(location: location) { driver in
             guard let coordinate = driver.location?.coordinate else { return }
@@ -146,7 +152,6 @@ class HomeController: UIViewController {
     func configure() {
         configureUI()
         fetchUserData()
-        fetchDrivers()
     }
     
     fileprivate func configureActionButton(config: ActionButtonConfiguration) {
@@ -167,6 +172,10 @@ class HomeController: UIViewController {
         view.addSubview(actionButton)
         actionButton.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, paddingTop: 16, paddingLeft: 20, width: 30, height: 30)
         
+        configureTableView()
+    }
+    
+    func configureLocationInputActivationView() {
         view.addSubview(inputActivationView)
         inputActivationView.centerX(inView: view)
         inputActivationView.setDimensions(height: 50, width: view.frame.width - 64)
@@ -177,8 +186,6 @@ class HomeController: UIViewController {
         UIView.animate(withDuration: 2) {
             self.inputActivationView.alpha = 1
         }
-        
-        configureTableView()
     }
     
     // 네비게이션바 설정
@@ -199,6 +206,7 @@ class HomeController: UIViewController {
     
     func configureRideActionView() {
         view.addSubview(rideActionView)
+        rideActionView.delegate = self
         rideActionView.frame = CGRect(x: 0, y: view.frame.height, width: view.frame.width, height: rideActionViewHeight)
     }
     
@@ -469,6 +477,23 @@ extension HomeController: MKMapViewDelegate {
             return lineRenderer
         }
         return MKOverlayRenderer()
+    }
+    
+}
+
+extension HomeController: RideActionViewDelegate {
+    func uploadTrip(_ view: RideActionView) {
+        guard let pickupCoordinates = locationManager?.location?.coordinate else { return }
+        guard let destinationCoordinates = view.destination?.coordinate else { return }
+        
+        Service.shared.uploadTrip(pickupCoordinates, destinationCoordinates) { error, ref in
+            if let error = error {
+                print("DEBUG: Failed to upload triop with error \(error.localizedDescription)")
+                return
+            }
+            
+            print("DEBUG: Did upload trip successfully")
+        }
     }
     
 }
