@@ -18,6 +18,7 @@
 		CE7D28E327D78C05007572E7 /* AuthButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7D28E227D78C05007572E7 /* AuthButton.swift */; };
 		CE8DEE8927D8C6660031E142 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CE8DEE8827D8C6660031E142 /* GoogleService-Info.plist */; };
 		CE9534A927E0C17300371558 /* LocationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9534A827E0C17300371558 /* LocationCell.swift */; };
+		CE9A012527F09A90003ABA49 /* PickupController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9A012427F09A90003ABA49 /* PickupController.swift */; };
 		CE9A9EF327D9F26C0081CDDC /* HomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9A9EF227D9F26C0081CDDC /* HomeController.swift */; };
 		CE9C543327D63715001E3E5D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9C543227D63715001E3E5D /* AppDelegate.swift */; };
 		CE9C543527D63715001E3E5D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE9C543427D63715001E3E5D /* SceneDelegate.swift */; };
@@ -44,6 +45,7 @@
 		CE7D28E227D78C05007572E7 /* AuthButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthButton.swift; sourceTree = "<group>"; };
 		CE8DEE8827D8C6660031E142 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		CE9534A827E0C17300371558 /* LocationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationCell.swift; sourceTree = "<group>"; };
+		CE9A012427F09A90003ABA49 /* PickupController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickupController.swift; sourceTree = "<group>"; };
 		CE9A9EF227D9F26C0081CDDC /* HomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeController.swift; sourceTree = "<group>"; };
 		CE9C542F27D63715001E3E5D /* UberClone.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UberClone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9C543227D63715001E3E5D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -147,6 +149,7 @@
 				CE9C544B27D637FB001E3E5D /* LoginController.swift */,
 				CE7D28E027D7831E007572E7 /* SignUpController.swift */,
 				CE9A9EF227D9F26C0081CDDC /* HomeController.swift */,
+				CE9A012427F09A90003ABA49 /* PickupController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -294,6 +297,7 @@
 				CE9A9EF327D9F26C0081CDDC /* HomeController.swift in Sources */,
 				CE5347EF27E613A500276F44 /* LocationHandler.swift in Sources */,
 				CE22A02C27EDE432002EAAD1 /* Trip.swift in Sources */,
+				CE9A012527F09A90003ABA49 /* PickupController.swift in Sources */,
 				CE2D315A27E76825006F1B54 /* DriverAnnotation.swift in Sources */,
 				CE6555D727DDC434001DE419 /* LocationInputView.swift in Sources */,
 				CE9534A927E0C17300371558 /* LocationCell.swift in Sources */,

@@ -44,7 +44,18 @@ class HomeController: UIViewController {
             if user?.accountType == .passenger {
                 fetchDrivers()
                 configureLocationInputActivationView()
+            } else {
+                observeTrips()
             }
+        }
+    }
+    
+    private var trip: Trip? {
+        didSet {
+            guard let trip = trip else { return }
+            let controller = PickupController(trip: trip)
+            controller.modalPresentationStyle = .fullScreen
+            self.present(controller, animated: true, completion: nil)
         }
     }
     
@@ -117,6 +128,11 @@ class HomeController: UIViewController {
         }
     }
     
+    func observeTrips() {
+        Service.shared.observeTrips { trip in
+            self.trip = trip
+        }
+    }
     
     func checkIfUserIsLoggedIn() {
         if Auth.auth().currentUser?.uid == nil {
