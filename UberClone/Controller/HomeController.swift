@@ -55,6 +55,7 @@ class HomeController: UIViewController {
             guard let trip = trip else { return }
             let controller = PickupController(trip: trip)
             controller.modalPresentationStyle = .fullScreen
+            controller.delegate = self
             self.present(controller, animated: true, completion: nil)
         }
     }
@@ -73,6 +74,11 @@ class HomeController: UIViewController {
         configureNavigationBar()
         checkIfUserIsLoggedIn()
         enableLocationService(locationManager ?? CLLocationManager())
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        guard let trip = trip else { return }
+        print("DEBUG: Trip state is \(trip.state)")
     }
     
     //MARK: - Actions
@@ -497,6 +503,8 @@ extension HomeController: MKMapViewDelegate {
     
 }
 
+//MARK: - RideActionViewDelegate
+
 extension HomeController: RideActionViewDelegate {
     func uploadTrip(_ view: RideActionView) {
         guard let pickupCoordinates = locationManager?.location?.coordinate else { return }
@@ -510,6 +518,16 @@ extension HomeController: RideActionViewDelegate {
             
             print("DEBUG: Did upload trip successfully")
         }
+    }
+    
+}
+
+
+//MARK: - PickupControllerDelegate
+extension HomeController: PickupControllerDelegate {
+    func didAcceptTrip(_ trip: Trip) {
+        self.trip?.state = .accepeted
+        self.dismiss(animated: true, completion: nil)
     }
     
 }
