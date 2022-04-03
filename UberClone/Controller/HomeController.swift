@@ -93,7 +93,7 @@ class HomeController: UIViewController {
     @objc func actionButtonPressed() {
         switch actionButtonConfig {
         case .showMenu:
-            print("handle show menu")
+            print("DEBUG: handle show menu")
         case .dismissActionView:
             removeAnnotationsAndOverlays()
             mapView.showAnnotations(mapView.annotations, animated: true)
@@ -506,6 +506,12 @@ private extension HomeController {
             mapView.removeOverlay(mapView.overlays[0])
         }
     }
+    
+    func centerMapOnUserLocation() {
+        guard let coordinate = locationManager?.location?.coordinate else { return }
+        let region = MKCoordinateRegion(center: coordinate, latitudinalMeters: 2000, longitudinalMeters: 2000)
+        mapView.setRegion(region, animated: true)
+    }
 }
 
 
@@ -539,6 +545,7 @@ extension HomeController: MKMapViewDelegate {
 //MARK: - RideActionViewDelegate
 
 extension HomeController: RideActionViewDelegate {
+    
     func uploadTrip(_ view: RideActionView) {
         guard let pickupCoordinates = locationManager?.location?.coordinate else { return }
         guard let destinationCoordinates = view.destination?.coordinate else { return }
@@ -554,6 +561,21 @@ extension HomeController: RideActionViewDelegate {
             UIView.animate(withDuration: 0.3) {
                 self.rideActionView.frame.origin.y = self.view.frame.height
             }
+        }
+    }
+    
+    func cancelTrip() {
+        Service.shared.cancelTrip { error, ref in
+            if let error = error {
+                print("DEBUG: Error deleting trip. error is \(error.localizedDescription)")
+                return
+            }
+            self.centerMapOnUserLocation()
+            self.animateRideActionView(shouldShow: false)
+            self.removeAnnotationsAndOverlays()
+            
+            self.actionButton.setImage(UIImage(imageLiteralResourceName: "baseline_menu_black_36dp").withRenderingMode(.alwaysOriginal), for: .normal)
+            self.actionButtonConfig = .showMenu
         }
     }
     
@@ -573,6 +595,14 @@ extension HomeController: PickupControllerDelegate {
         generatePolyline(toDestination: mapItem)
         
         mapView.zoomToFit(annotations: mapView.annotations)
+        
+        Service.shared.observeTripCancelled(trip: trip) {
+            self.removeAnnotationsAndOverlays()
+            self.animateRideActionView(shouldShow: false)
+            self.centerMapOnUserLocation()
+            self.presentAlertController(withTitle: "Oops!", withMessage: "The passenger has cancelled this trip. Press OK to continue.")
+            
+        }
         
         self.dismiss(animated: true) {
             Service.shared.fetchUserData(uid: trip.passengerUid) { passenger in
