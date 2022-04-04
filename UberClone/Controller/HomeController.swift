@@ -311,8 +311,8 @@ class HomeController: UIViewController {
             if let user = user {
                 rideActionView.user = user
             }
-            
-            rideActionView.configureUI(withConfig: config)
+             
+            rideActionView.config = config
         }
         
     }
@@ -328,12 +328,23 @@ extension HomeController: AuthenticationDelegate {
 }
 
 
-//MARK: - LocationServices
+//MARK: - CLLocationManagerDelegate
 // 위치 정보 수집 허용 여부 체크
-extension HomeController {
+extension HomeController: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didStartMonitoringFor region: CLRegion) {
+        print("DEBUG: Did start monitoring for region \(region)")
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        print("DEBUG: Driver did enter passenger region...")
+        
+        self.rideActionView.config = .pickupPassenger
+    }
+    
     func enableLocationService(_ manager: CLLocationManager) {
+        locationManager?.delegate = self
+        
         if #available(iOS 14.0, *) {
-            
             
             switch manager.authorizationStatus {
             case .notDetermined:
@@ -512,6 +523,12 @@ private extension HomeController {
         let region = MKCoordinateRegion(center: coordinate, latitudinalMeters: 2000, longitudinalMeters: 2000)
         mapView.setRegion(region, animated: true)
     }
+
+    func setCustomRegion(withCoordinates coordinates: CLLocationCoordinate2D) {
+        let region = CLCircularRegion(center: coordinates, radius: 25, identifier: "pickup")
+        locationManager?.startMonitoring(for: region)
+        
+    }
 }
 
 
@@ -583,6 +600,8 @@ extension HomeController: RideActionViewDelegate {
             
             self.actionButton.setImage(UIImage(imageLiteralResourceName: "baseline_menu_black_36dp").withRenderingMode(.alwaysOriginal), for: .normal)
             self.actionButtonConfig = .showMenu
+            
+            self.inputActivationView.alpha = 1
         }
     }
     
@@ -596,6 +615,8 @@ extension HomeController: PickupControllerDelegate {
         anno.coordinate = trip.pickupCoordinates
         mapView.addAnnotation(anno)
         mapView.selectAnnotation(anno, animated: true)
+        
+        setCustomRegion(withCoordinates: trip.pickupCoordinates)
         
         let placemark = MKPlacemark(coordinate: trip.pickupCoordinates)
         let mapItem = MKMapItem(placemark: placemark)
