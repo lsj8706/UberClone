@@ -10,6 +10,7 @@ import CoreLocation
 enum TripState: Int {
     case requested
     case accepeted
+    case driverArrived
     case inProgress
     case completed
     
